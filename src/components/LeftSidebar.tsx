@@ -3,14 +3,11 @@ import {
   ListPlus,
   Plus,
   Search,
-  Settings2,
   Sparkles,
   Wand2,
 } from "lucide-react";
 import { LIBRARY_ITEMS } from "../data/library";
 import type {
-  AIProvider,
-  AISettings,
   ObjectRole,
   Palette,
   SizeMode,
@@ -20,11 +17,9 @@ import { colorizeSvgBody } from "../utils/svgCompiler";
 interface LeftSidebarProps {
   sizeMode: SizeMode;
   palette: Palette;
-  aiSettings: AISettings;
   aiLoading: boolean;
   aiNote: string | null;
   aiError: string | null;
-  onChangeAiSettings: (next: AISettings) => void;
   onComposeMetaphor: (prompt: string) => void;
   onComposeByNames: (namesInput: string) => void;
   onAddObject: (itemId: string, role: ObjectRole) => void;
@@ -39,11 +34,9 @@ const EXAMPLE_METAPHORS = [
 export const LeftSidebar: FC<LeftSidebarProps> = ({
   sizeMode,
   palette,
-  aiSettings,
   aiLoading,
   aiNote,
   aiError,
-  onChangeAiSettings,
   onComposeMetaphor,
   onComposeByNames,
   onAddObject,
@@ -51,7 +44,6 @@ export const LeftSidebar: FC<LeftSidebarProps> = ({
   const [metaphor, setMetaphor] = useState("");
   const [namesPrompt, setNamesPrompt] = useState("");
   const [search, setSearch] = useState("");
-  const [showAiConfig, setShowAiConfig] = useState(false);
 
   const filteredItems = LIBRARY_ITEMS.filter((item) => {
     const q = search.trim().toLowerCase();
@@ -83,53 +75,8 @@ export const LeftSidebar: FC<LeftSidebarProps> = ({
             <Sparkles className="h-3.5 w-3.5 text-indigo-600" />
             Сценарий 1: По метафоре
           </h2>
-          <button
-            type="button"
-            onClick={() => setShowAiConfig((v) => !v)}
-            className="flex items-center gap-1 rounded px-1.5 py-0.5 text-[11px] font-medium text-slate-500 hover:bg-slate-100 hover:text-slate-800"
-            title="Настройки AI-провайдера"
-          >
-            <Settings2 className="h-3 w-3" />
-            {aiSettings.provider === "local" ? "Локальный AI" : aiSettings.provider.toUpperCase()}
-          </button>
+          <span className="rounded bg-indigo-50 px-1.5 py-0.5 text-[10px] font-medium text-indigo-700">AI</span>
         </div>
-
-        {showAiConfig && (
-          <div className="mb-3 space-y-2 rounded-lg border border-slate-200 bg-slate-50 p-2.5 text-xs">
-            <label className="block font-medium text-slate-700">
-              Режим анализа метафор
-              <select
-                value={aiSettings.provider}
-                onChange={(e) =>
-                  onChangeAiSettings({
-                    ...aiSettings,
-                    provider: e.target.value as AIProvider,
-                  })
-                }
-                className="mt-1 w-full rounded border border-slate-300 bg-white px-2 py-1 text-xs"
-              >
-                <option value="local">Локальный движок (без ключа)</option>
-                <option value="groq">Groq API (Llama 3.3)</option>
-                <option value="gemini">Google Gemini 2.0 Flash</option>
-                <option value="mistral">Mistral AI</option>
-              </select>
-            </label>
-            {aiSettings.provider !== "local" && (
-              <label className="block font-medium text-slate-700">
-                API-ключ (хранится в браузере)
-                <input
-                  type="password"
-                  value={aiSettings.apiKey}
-                  onChange={(e) =>
-                    onChangeAiSettings({ ...aiSettings, apiKey: e.target.value })
-                  }
-                  placeholder="Вставьте ключ..."
-                  className="mt-1 w-full rounded border border-slate-300 bg-white px-2 py-1 text-xs"
-                />
-              </label>
-            )}
-          </div>
-        )}
 
         <form onSubmit={handleMetaphorSubmit} className="space-y-2">
           <textarea

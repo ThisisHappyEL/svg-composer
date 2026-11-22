@@ -1,7 +1,6 @@
 import { LIBRARY_ITEMS } from "../data/library";
 import type {
   AICompositionPlan,
-  AISettings,
   LayoutPresetId,
   ObjectRole,
 } from "../types/composer";
@@ -9,19 +8,19 @@ import type {
 const SEMANTIC_RULES: Record<string, string[]> = {
   book: ["книг", "учеб", "знан", "курс", "обуч", "чтен", "теор", "лекц", "гайд", "инструкц", "образован", "школ", "универ", "студент", "метод", "правил", "book", "learn", "study", "course", "read", "guide"],
   phone: ["телеф", "смартф", "мобил", "прилож", "экран", "интерфейс", "онлайн", "чат", "мессендж", "уведомл", "сервис", "связ", "звон", "цифр", "диджитал", "phone", "app", "mobile", "chat"],
-  puzzle: ["пазл", "решен", "систем", "интеграц", "логик", "сбор", "команд", "связк", "компонент", "конструкт", "задач", "алгоритм", "продукт", "архитект", "совмест", "puzzle", "team", "system", "solution"],
+  puzzle: ["пазл", "решен", "систем", "интеграц", "логик", "сбор", "команд", "связк", "компонент", "конструкт", "задач", "алгоритм", "продукт", "архитект", "совмест", "игр", "puzzle", "team", "system", "solution"],
   coin: ["монет", "деньг", "финанс", "оплат", "цен", "стоим", "доход", "прибыл", "бюджет", "инвест", "бонус", "кэшбэк", "грамот", "экономи", "руб", "валют", "зарплат", "платеж", "coin", "money", "pay", "finance"],
   headphones: ["наушн", "аудио", "звук", "музык", "подкаст", "голос", "слуш", "фокус", "концентр", "поддержк", "саппорт", "созвон", "вебинар", "стрим", "audio", "music", "podcast", "sound"],
-  lamp: ["ламп", "иде", "свет", "озарен", "инсайт", "креатив", "вдохнов", "творч", "офис", "стол", "ноч", "вечер", "стартап", "изобрет", "нейросет", "ии", "ai", "умн", "lamp", "idea", "light", "creative"],
+  lamp: ["ламп", "иде", "свет", "озарен", "инсайт", "креатив", "вдохнов", "творч", "офис", "стол", "рабоч", "мест", "ноч", "вечер", "стартап", "изобрет", "нейросет", "ии", "ai", "умн", "lamp", "idea", "light", "creative"],
   vase: ["цвет", "ваз", "рост", "развит", "забот", "красот", "гармон", "природ", "эколог", "жизн", "уют", "комфорт", "отдых", "здоров", "праздн", "подар", "flower", "growth", "life", "nature"],
   wallet: ["кошел", "карт", "покуп", "трат", "сбереж", "подписк", "бизнес", "счет", "банк", "кредит", "тариф", "выгод", "расход", "wallet", "bank", "card", "shop"],
-  folder: ["папк", "файл", "документ", "архив", "проект", "портфол", "баз", "структур", "поряд", "хранен", "отчет", "каталог", "библиотек", "данн", "folder", "file", "doc", "project", "data"],
+  folder: ["папк", "файл", "документ", "архив", "проект", "портфол", "баз", "структур", "поряд", "хранен", "отчет", "каталог", "библиотек", "данн", "бумаг", "folder", "file", "doc", "project", "data"],
   pen: ["ручк", "пис", "замет", "текст", "копирайт", "стать", "блог", "договор", "контракт", "подпис", "рисов", "дизайн", "редакт", "автор", "заголов", "pen", "write", "note", "design", "edit"],
 };
 
 function choosePaletteLocal(text: string): string {
   const low = text.toLowerCase();
-  if (/уют|тепл|кофе|дом|творч|осень|подар|комфорт|забот|вдохнов|праздн/.test(low)) {
+  if (/уют|тепл|кофе|дом|творч|осень|подар|комфорт|забот|вдохнов|праздн|кот/.test(low)) {
     return "peach";
   }
   if (/свеж|экол|здоров|природ|рост|музык|аудио|отдых|спокой|баланс|медитац/.test(low)) {
@@ -33,7 +32,7 @@ function choosePaletteLocal(text: string): string {
 function chooseLayoutLocal(text: string): LayoutPresetId {
   const low = text.toLowerCase();
   if (/заголов|статья|блог|анонс|баннер|презентац|лендинг/.test(low)) return "headline";
-  if (/динамик|движ|рост|путь|поток|процесс/.test(low)) return "offset";
+  if (/динамик|движ|рост|путь|поток|процесс|игр|беспоряд|напад/.test(low)) return "offset";
   return "clustered";
 }
 
@@ -108,33 +107,6 @@ export function composeByMetaphorLocal(prompt: string): AICompositionPlan {
   };
 }
 
-const SYSTEM_PROMPT = `Ты арт-директор векторного конструктора иллюстраций.
-Тебе дана фраза/метафора/заголовок. Нужно собрать сцену ТОЛЬКО из доступных ID объектов:
-- book (Книга: обучение, знания, теория, курс)
-- phone (Телефон: мобильные сервисы, приложения, онлайн, связь)
-- puzzle (Пазлы: решение, интеграция, команда, система)
-- coin (Монета: деньги, оплата, финансы, бонус)
-- headphones (Наушники: аудио, подкаст, музыка, поддержка, фокус)
-- lamp (Лампа: идея, вдохновение, работа, AI, свет)
-- vase (Цветы: рост, развитие, забота, уют, жизнь)
-- wallet (Кошелек: финансы, подписка, сбережения, покупки)
-- folder (Папка: файлы, документы, проекты, структура)
-- pen (Ручка: письмо, заметки, дизайн, контракт)
-
-Доступные paletteId: "lavender" (технологии, обучение, фокус), "peach" (тепло, творчество, уют, бизнес), "mint" (свежесть, рост, здоровье, аудио).
-Доступные layoutPreset: "clustered" (по центру), "offset" (динамика), "headline" (под заголовок слева).
-
-Верни СТРОГО валидный JSON без markdown-обертки:
-{
-  "paletteId": "lavender" | "peach" | "mint",
-  "layoutPreset": "clustered" | "offset" | "headline",
-  "reasoning": "Короткое объяснение выбора на русском (1-2 предложения)",
-  "items": [
-    { "itemId": "id", "role": "bg" | "main" }
-  ]
-}
-Правила: 2-4 объекта, 0 или 1 объект с role="bg" (ставь его первым в массиве), остальные role="main".`;
-
 function extractJson(text: string): Record<string, unknown> {
   const cleaned = text.replace(/```json\s*|```/gi, "").trim();
   const start = cleaned.indexOf("{");
@@ -170,71 +142,26 @@ function sanitizePlan(raw: Record<string, unknown>, providerLabel: string): AICo
   };
 }
 
-export async function composeByMetaphor(
-  prompt: string,
-  settings: AISettings
-): Promise<AICompositionPlan> {
-  if (settings.provider === "local" || !settings.apiKey.trim()) {
-    return composeByMetaphorLocal(prompt);
-  }
-
-  const key = settings.apiKey.trim();
-
-  if (settings.provider === "groq" || settings.provider === "mistral") {
-    const endpoint =
-      settings.provider === "groq"
-        ? "https://api.groq.com/openai/v1/chat/completions"
-        : "https://api.mistral.ai/v1/chat/completions";
-    const model = settings.provider === "groq" ? "llama-3.3-70b-versatile" : "mistral-small-latest";
-
-    const res = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${key}`,
-      },
-      body: JSON.stringify({
-        model,
-        temperature: 0.4,
-        messages: [
-          { role: "system", content: SYSTEM_PROMPT },
-          { role: "user", content: `Метафора/заголовок: "${prompt}"` },
-        ],
-      }),
-    });
-
-    if (!res.ok) {
-      const errText = await res.text();
-      throw new Error(`Ошибка API (${res.status}): ${errText.slice(0, 140)}`);
-    }
-    const data = await res.json();
-    const content = data?.choices?.[0]?.message?.content || "";
-    return sanitizePlan(extractJson(content), settings.provider === "groq" ? "Groq Llama 3.3" : "Mistral Small");
-  }
-
-  if (settings.provider === "gemini") {
-    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(key)}`;
-    const res = await fetch(endpoint, {
+export async function composeByMetaphor(prompt: string): Promise<AICompositionPlan> {
+  try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 12000);
+    const res = await fetch("/api/compose", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [
-          {
-            role: "user",
-            parts: [{ text: `${SYSTEM_PROMPT}\n\nМетафора/заголовок: "${prompt}"` }],
-          },
-        ],
-        generationConfig: { responseMimeType: "application/json", temperature: 0.4 },
-      }),
+      body: JSON.stringify({ prompt }),
+      signal: controller.signal,
     });
+    clearTimeout(timer);
 
-    if (!res.ok) {
-      const errText = await res.text();
-      throw new Error(`Ошибка Gemini (${res.status}): ${errText.slice(0, 140)}`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data?.content) {
+        return sanitizePlan(extractJson(data.content), `OpenRouter LLM (${data.model || "free"})`);
+      }
     }
-    const data = await res.json();
-    const content = data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
-    return sanitizePlan(extractJson(content), "Google Gemini 2.0 Flash");
+  } catch {
+    // На localhost или при таймауте бесшовно падаем в локальный семантический движок
   }
 
   return composeByMetaphorLocal(prompt);

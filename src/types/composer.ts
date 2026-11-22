@@ -39,7 +39,7 @@ export interface CanvasFormat {
   baseScaleL: number;
 }
 
-export type AIProvider = "local" | "groq" | "gemini" | "mistral";
+export type AIProvider = "local" | "openrouter" | "groq" | "gemini" | "mistral";
 
 export interface AISettings {
   provider: AIProvider;

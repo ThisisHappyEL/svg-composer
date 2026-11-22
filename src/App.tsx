@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Check, Code2, Download, Trash2, X } from "lucide-react";
 import { CanvasStage } from "./components/CanvasStage";
 import { LeftSidebar } from "./components/LeftSidebar";
@@ -6,7 +6,6 @@ import { RightSidebar } from "./components/RightSidebar";
 import { CANVAS_FORMATS, getSlotPosition } from "./data/formats";
 import { DEFAULT_PALETTES } from "./data/palettes";
 import type {
-  AISettings,
   BackgroundStyle,
   FormatId,
   LayoutPresetId,
@@ -49,15 +48,6 @@ export function App() {
   const [objects, setObjects] = useState<SceneObject[]>(() => buildStarterScene("banner"));
   const [selectedUid, setSelectedUid] = useState<string | null>(null);
 
-  const [aiSettings, setAiSettings] = useState<AISettings>(() => {
-    try {
-      const saved = localStorage.getItem("svg_composer_ai");
-      if (saved) return JSON.parse(saved);
-    } catch {
-      // ignore
-    }
-    return { provider: "local", apiKey: "" };
-  });
   const [aiLoading, setAiLoading] = useState(false);
   const [aiNote, setAiNote] = useState<string | null>(null);
   const [aiError, setAiError] = useState<string | null>(null);
@@ -65,13 +55,6 @@ export function App() {
   const [svgModalOpen, setSvgModalOpen] = useState(false);
   const [copiedSvg, setCopiedSvg] = useState(false);
 
-  useEffect(() => {
-    try {
-      localStorage.setItem("svg_composer_ai", JSON.stringify(aiSettings));
-    } catch {
-      // ignore
-    }
-  }, [aiSettings]);
 
   const activePalette =
     palettes.find((p) => p.id === activePaletteId) || palettes[0];
@@ -169,7 +152,7 @@ export function App() {
     setAiLoading(true);
     setAiError(null);
     try {
-      const plan = await composeByMetaphor(prompt, aiSettings);
+      const plan = await composeByMetaphor(prompt);
       const nextObjects: SceneObject[] = plan.items.map((item, idx) => {
         const pos = getSlotPosition(formatId, plan.layoutPreset, idx);
         return {
@@ -288,11 +271,9 @@ export function App() {
         <LeftSidebar
           sizeMode={sizeMode}
           palette={activePalette}
-          aiSettings={aiSettings}
           aiLoading={aiLoading}
           aiNote={aiNote}
           aiError={aiError}
-          onChangeAiSettings={setAiSettings}
           onComposeMetaphor={handleComposeMetaphor}
           onComposeByNames={handleComposeByNames}
           onAddObject={handleAddObject}
