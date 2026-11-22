@@ -2,8 +2,6 @@
 
 > **Живое демо:** [https://svg-composer.netlify.app/](https://svg-composer.netlify.app/)
 
-![SVG Composer Preview](./docs/preview.png)
-
 ![Интерфейс SVG Composer — баннер 1200x630 и AI-сборка](./docs/preview-main.png)
 
 ![Кастомная палитра из JSON и формат 1000x1000](./docs/preview-cobalt.png)
